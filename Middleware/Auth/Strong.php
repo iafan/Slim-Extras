@@ -39,11 +39,6 @@ class Middleware_Auth_Strong extends Slim_Middleware {
     /**
      * @var string
      */
-    protected $realm;
-
-    /**
-     * @var string
-     */
     protected $username;
 
     /**
@@ -65,8 +60,12 @@ class Middleware_Auth_Strong extends Slim_Middleware {
      * @param   array  $config   Configuration for Strong and Login Details
      * @return  void
      */
-    public function __construct(array $config = array()) {
+    public function __construct(array $config = array(), Strong $auth = null) {
         $this->config = array_merge($this->settings, $config);
+        $this->auth = $auth;
+        if (empty($auth)) {
+            $this->auth = Strong::factory($this->config);
+        }
     }
 
     /**
@@ -81,13 +80,12 @@ class Middleware_Auth_Strong extends Slim_Middleware {
         $req = $this->app->request();
 
         // Authentication Initialised
-        $auth = Strong::factory($this->config);
         switch ($this->config['auth.type']) {
             case 'form':
-                $this->formauth($auth, $req);
+                $this->formauth($this->auth, $req);
             break;
             default:
-                $this->httpauth($auth, $req);
+                $this->httpauth($this->auth, $req);
             break;
         }
     }
@@ -143,7 +141,7 @@ class Middleware_Auth_Strong extends Slim_Middleware {
             $this->next->call();
         } else {
             $res->status(401);
-            $res->header('WWW-Authenticate', sprintf('Basic realm="%s"', $this->realm));
+            $res->header('WWW-Authenticate', sprintf('Basic realm="%s"', $this->config->realm));
         }
     }
 }
