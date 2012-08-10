@@ -6,7 +6,7 @@
  * to require HTTP basic auth for all routes.
  *
  * @author Andrew Smith <a.smith@silentworks.co.uk>
- * @version 1.0
+ * @version 1.0.1
  * @copyright 2012 Andrew Smith
  *
  * USAGE
@@ -37,16 +37,6 @@
  */
 class Middleware_Auth_Strong extends Slim_Middleware {
     /**
-     * @var string
-     */
-    protected $username;
-
-    /**
-     * @var string
-     */
-    protected $password;
-
-    /**
      * @var array
      */
     protected $settings = array(
@@ -64,7 +54,7 @@ class Middleware_Auth_Strong extends Slim_Middleware {
         $this->config = array_merge($this->settings, $config);
         $this->auth = $auth;
         if (empty($auth)) {
-            $this->auth = Strong::factory($this->config);
+            $this->auth = Strong::factory($config);
         }
     }
 
@@ -141,7 +131,7 @@ class Middleware_Auth_Strong extends Slim_Middleware {
             $this->next->call();
         } else {
             $res->status(401);
-            $res->header('WWW-Authenticate', sprintf('Basic realm="%s"', $this->config->realm));
+            $res->header('WWW-Authenticate', sprintf('Basic realm="%s"', $this->config['realm']));
         }
     }
 }
