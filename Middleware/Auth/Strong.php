@@ -42,6 +42,7 @@ class Middleware_Auth_Strong extends Slim_Middleware {
     protected $settings = array(
         'login.url' => '/',
         'auth.type' => 'http',
+        'realm' => 'Secure Area',
     );
 
     /**
